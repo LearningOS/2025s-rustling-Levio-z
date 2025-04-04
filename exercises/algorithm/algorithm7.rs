@@ -2,8 +2,6 @@
 	stack
 	This question requires you to use a stack to achieve a bracket match
 */
-
-// I AM NOT DONE
 #[derive(Debug)]
 struct Stack<T> {
 	size: usize,
@@ -31,7 +29,10 @@ impl<T> Stack<T> {
 		self.size += 1;
 	}
 	fn pop(&mut self) -> Option<T> {
-		// TODO
+		if self.size>0{
+			self.size=self.size-1;
+			return Some(self.data.remove(self.size));
+		}
 		None
 	}
 	fn peek(&self) -> Option<&T> {
@@ -69,7 +70,7 @@ impl<T> Stack<T> {
 	}
 }
 struct IntoIter<T>(Stack<T>);
-impl<T: Clone> Iterator for IntoIter<T> {
+impl<T: Clone+std::fmt::Debug> Iterator for IntoIter<T> {
 	type Item = T;
 	fn next(&mut self) -> Option<Self::Item> {
 		if !self.0.is_empty() {
@@ -101,8 +102,30 @@ impl<'a, T> Iterator for IterMut<'a, T> {
 
 fn bracket_match(bracket: &str) -> bool
 {
-	//TODO
-	true
+	let mut stack = Stack::new();
+	for c in bracket.chars() {
+        match c {
+            '(' | '[' | '{' => stack.push(c),   
+            ')' => {
+                if stack.pop() != Some('(') {   
+                    return false;
+                }
+            }
+            ']' => {
+                if stack.pop() != Some('[') {
+                    return false;
+                }
+            }
+            '}' => {
+                if stack.pop() != Some('{') {
+                    return false;
+                }
+            }
+            _ => {} // 忽略其他字符（如果有的话）
+        }
+    }
+
+    stack.is_empty() 
 }
 
 #[cfg(test)]
